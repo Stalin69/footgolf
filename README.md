@@ -1,0 +1,209 @@
+// Helyes néven való elmentés: 1 pont
+// Elindul a program: 1 pont
+
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+struct indulok 
+{
+	string nev;
+	string kategoria;
+	string egyesulet;
+	string pont[8];
+	int pontint[8];
+};
+
+int db = 0;
+int osszpont = 0;
+
+// 5. feladat
+void osszpontfgv(int pontint[]) // Függvény elkészítése: 1 pont
+{
+	osszpont = 0;
+	int rossz0 = 500;
+	int rossz1 = 500;
+
+	for (int i = 0; i < 8; i++)
+	{
+		osszpont = osszpont + pontint[i]; // Összpontszám kiszámítása
+		if (rossz0 > pontint[i])
+		{
+			rossz1 = rossz0;
+			rossz0 = pontint[i];
+		
+		}
+		else
+		{
+			if(rossz1 > pontint[i])
+			{
+				rossz1 = pontint[i];
+			}
+		}
+	}
+
+	osszpont = osszpont - rossz0 - rossz1; // A két legrosszabb eredmény kivonása a pontszámból
+	
+	if (rossz0 > 0)
+	{
+		osszpont += 20;
+	}
+	else
+	{
+		if (rossz1 > 0)
+		{
+			osszpont += 10;
+		}
+	}
+
+	//4 pont
+};
+
+int main() 
+{
+	indulok versenyzo[500]; // A zárójelben levő szám minimum annyi kell legyen, ahány sor van a fájlban
+
+	ifstream be;
+	be.open("fob2016.txt");
+
+	// 2. feladat
+	while(be.good())
+	{
+		getline(be, versenyzo[db].nev, ';'); // Adatok beolvasása pontosvesszős elválasztásnál
+		getline(be, versenyzo[db].kategoria, ';');
+		getline(be, versenyzo[db].egyesulet, ';');
+
+		for (int i = 0; i < 7; i++)
+		{
+			//be >> versenyzo[db].pontint[i];
+			getline(be, versenyzo[db].pont[i], ';');
+			versenyzo[db].pontint[i] = std::stoi(versenyzo[db].pont[i]);
+		}
+		getline(be, versenyzo[db].pont[7], '\n');
+		versenyzo[db].pontint[7] = stoi(versenyzo[db].pont[7]); // stoi: Stringből int-re alakítás
+
+		db++;
+	}
+
+	// Legalább egy sor beolvasva: 1 pont ; Összes sor beolvasva: 1 pont ; El vannak tárolva az adatok: 1 pont
+	// A db egyenlő a versenyzők számával: 1 pont
+
+	be.close();
+
+	// 3. feladat
+	cout << "3. feladat: "; // Legalább két kiírásos feladatnál megjelenik a sorszám: 1 pont ; Ha minta szerinti a sorszám kiírása: 1 pont
+	cout << "Versenyzok szama: " << db << endl; // 1 pont
+
+	//4. feladat
+	float arany = 0.0; 
+
+	for (int i = 0; i < db; i++)
+	{
+		if (versenyzo[i].kategoria == "Noi")
+		{
+			arany = arany + 1; // Női versenyzők összeszámolása: 1 pont
+		}
+	}
+	
+	arany = arany * 100 / db; // Százalék kiszámítása az összes versenyzőből: 1 pont
+	arany = round(arany * 100.0) /100.0; // Kerekítés: 1 pont ; Ahány tizedesre kell kerekíteni, annyi 0-t kell írni az 1-es után
+
+	cout << "4. feladat: ";
+	cout << "A noi versenyzok aranya: " << arany << "%" << endl; // 1 pont
+
+	// 6. feladat ; 7 pont
+	int osszpontelozo = 0;
+	int legtobb = 0;
+	int legjobb = 0;
+
+	for (int i = 0; i < db; i++)
+	{
+		if (versenyzo[i].kategoria == "Noi")
+		{
+			osszpontfgv(versenyzo[i].pontint);
+			osszpontelozo = osszpont;
+			if (osszpont > legtobb)
+			{
+				legtobb = osszpont;
+				legjobb = i;
+			}
+		}
+	}
+
+	cout << "6. feladat: A bajnok noi versenyzo" << endl;
+	cout << "Nev: " << versenyzo[legjobb].nev << endl;
+	cout << "Egyesulet: " << versenyzo[legjobb].egyesulet << endl;
+	cout << "Osszpont: " << legtobb << endl;
+	
+	// 7. feladat ; 6 pont
+	ofstream ki;
+	ki.open("osszpontFF.txt");
+
+	for (int i = 0; i < db; i++)
+	{
+		if (versenyzo[i].kategoria == "Felnott ferfi")
+		{
+			ki << versenyzo[i].nev;
+			ki << ";";
+			osszpontfgv(versenyzo[i].pontint);
+			ki << osszpont;
+			ki << "\n";
+		}
+	}
+
+	// 8. feladat ; 8 pont
+	cout << "8. feladat: Egyesulet statisztika" << endl;
+
+	string egyesuletek[30];
+	int j = 0;
+
+	for (int i = 0; i < db; i++)
+	{
+		for (int k = 0; k < 30; k++)
+		{
+			if (versenyzo[i].egyesulet == egyesuletek[k])
+			{
+				break;
+			}
+			else
+			{
+				if (k == 29)
+				{
+					egyesuletek[j] = versenyzo[i].egyesulet;
+					j++;
+				}
+			}
+		}
+	}
+
+	int peregyesulet[30];
+	for (int k = 0; k < 30; k++)
+	{
+		peregyesulet[k] = 0;
+	}
+
+	for (int i = 0; i < db; i++)
+	{
+		for (int k = 0; k < j; k++)
+		{
+			if (versenyzo[i].egyesulet == egyesuletek[k])
+			{
+				peregyesulet[k]++;
+			}
+		}
+	}
+
+	for (int i = 0; i < j; i++)
+	{
+		if (peregyesulet[i] > 2 && egyesuletek[i] != "n.a.")
+		{
+			cout << egyesuletek[i] << " - " << peregyesulet[i] << " fo" << endl;
+
+		}
+	}
+
+	system("pause");
+	return 0;
+}
