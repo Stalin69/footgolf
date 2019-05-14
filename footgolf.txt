@@ -77,7 +77,6 @@ int main()
 
 		for (int i = 0; i < 7; i++)
 		{
-			//be >> versenyzo[db].pontint[i];
 			getline(be, versenyzo[db].pont[i], ';');
 			versenyzo[db].pontint[i] = std::stoi(versenyzo[db].pont[i]);
 		}
